@@ -22,6 +22,30 @@ namespace PathPlanner.ViewModel
 				public Canvas MapCanvas {get;set;}
 				public Model.Planner planner;
 				private DispatcherTimer _timer;
+				private bool _running;
+				private Bitmap _bm;
+
+				private double _goalAttraction;
+				public string GoalAttraction
+				{
+						get => _goalAttraction.ToString("0.##");
+						set
+						{
+								bool ok = double.TryParse(value, out _goalAttraction);
+								OnPropertyChanged("GoalAttraction");
+						}
+				}
+
+				private double _previousRepulsion;
+				public string PreviousRepulsion
+				{
+						get => _previousRepulsion.ToString("0.##");
+						set
+						{
+								bool ok = double.TryParse(value, out _previousRepulsion);
+								OnPropertyChanged("PreviousRepulsion");
+						}
+				}
 
 				public MainViewModel(Canvas mapCanvas)
 				{
@@ -29,12 +53,13 @@ namespace PathPlanner.ViewModel
 						ImgPath = @"C:\MUIA\RobotsAutonomos\practica3\Test\PathPlanner\Maps\TestMap.png";
 
 						MapCanvas = mapCanvas;
-						Bitmap bm = new Bitmap(ImgPath);
+						_bm = new Bitmap(ImgPath);
 						Model.Point start = new Model.Point (200,40);
 						Model.Point end = new Model.Point (400,200);
-						planner = new Model.Planner(bm, start,end);
+						planner = new Model.Planner(_bm, start,end);
 						_timer = new DispatcherTimer();
 						WaitTimeMs = 50;
+						_running = false;
 				}
 
 				public event PropertyChangedEventHandler PropertyChanged;
@@ -48,6 +73,7 @@ namespace PathPlanner.ViewModel
 				}
 
 				private int _waitTime;
+
 				public int WaitTimeMs
 				{
 						get => _waitTime;

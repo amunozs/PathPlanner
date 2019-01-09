@@ -13,6 +13,8 @@ namespace PathPlanner.Model
 				public List<Force> Forces { get; set; }
 				public Point Actual { get; set; }
 				public Point Start { get; set; }
+				public double GoalAttraction { get; set; }
+				public double PointRepulsion { get; set; }
 
 				public List<Point> Path { get; set; }
 
@@ -35,7 +37,7 @@ namespace PathPlanner.Model
 										}
 										Force f = new Force();
 										f.Point = value;
-										f.Strength = 100;
+										f.Strength = GoalAttraction;
 										Forces.Add(f);
 										_end = value;
 								}
@@ -48,6 +50,8 @@ namespace PathPlanner.Model
 						Forces = new List<Force>();
 						Start = start;
 						End = end;
+						GoalAttraction = 100;
+						PointRepulsion = 1;
 				}
 
 				public bool NextStep ()
@@ -86,8 +90,8 @@ namespace PathPlanner.Model
 
 						else
 						{
-								Force force = new Force() { Point = Actual, Strength = -1 };
-								Forces[0].Strength++;
+								Force force = new Force() { Point = Actual, Strength = - PointRepulsion };
+								//Forces[0].Strength++;
 								Forces.Add(force);
 								_actual_frozen = true;
 								if (Actual.PosX == End.PosX && Actual.PosY == End.PosY)
@@ -98,6 +102,17 @@ namespace PathPlanner.Model
 
 						return false;
 
+				}
+
+				public void Reset ()
+				{
+						Forces = new List<Force>();
+						Force f = new Force();
+						f.Point = End;
+						f.Strength = 100;
+						Forces.Add(f);
+						Actual = null;
+						_actual_frozen = true;
 				}
 
 				private double GetForce (Point point)

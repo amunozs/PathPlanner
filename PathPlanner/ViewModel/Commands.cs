@@ -17,13 +17,19 @@ namespace PathPlanner.ViewModel
 
 				public ICommand NextCommand { get; set; }
 
-				public ICommand AutoCommand { get; set; }
+				public ICommand PlayCommand { get; set; }
+
+				public ICommand PauseCommand { get; set; }
+
+				public ICommand StopCommand { get; set; }
 
 				private void CreateCommands()
 				{
 						DrawPointsCommand = new RelayCommand(DrawPointsExecute, DrawPointsCanExecute);
 						NextCommand = new RelayCommand(NextExecute, NextCanExecute);
-						AutoCommand = new RelayCommand(AutoExecute, AutoCanExecute);
+						PlayCommand = new RelayCommand(PlayExecute, PlayCanExecute);
+						PauseCommand = new RelayCommand(PauseExecute, PauseCanExecute);
+						StopCommand = new RelayCommand(StopExecute, StopCanExecute);
 				}
 
 
@@ -70,14 +76,20 @@ namespace PathPlanner.ViewModel
 						Canvas.SetLeft(goal, planner.End.PosX);
 						Canvas.SetTop(goal, planner.End.PosY);
 
-						Ellipse actual = new Ellipse();
-						actual.Fill = Brushes.Green;
-						actual.Width = 5;
-						actual.Height = 5;
-						actual.StrokeThickness = 4;
-						MapCanvas.Children.Add(actual);
-						Canvas.SetLeft(actual, planner.Actual.PosX);
-						Canvas.SetTop(actual, planner.Actual.PosY);
+						
+
+						if (planner.Actual != null)
+						{
+								Ellipse actual = new Ellipse();
+								actual.Fill = Brushes.Green;
+								actual.Width = 5;
+								actual.Height = 5;
+								actual.StrokeThickness = 4;
+								MapCanvas.Children.Add(actual);
+								Canvas.SetLeft(actual, planner.Actual.PosX);
+								Canvas.SetTop(actual, planner.Actual.PosY);
+						}
+						
 
 						/*
 						foreach (Model.Point point in planner.Path)
@@ -146,14 +158,12 @@ namespace PathPlanner.ViewModel
 						}
 				}
 				
-				private bool AutoCanExecute(object parameter)
+				private bool PlayCanExecute(object parameter)
 				{
-						return true;
+						return !_running;
 				}
 
-
-				
-				public void AutoExecute(object parameter)
+				public void PlayExecute(object parameter)
 				{
 						_timer.Tick += new EventHandler(async (object s, EventArgs a) =>
 						{
@@ -161,12 +171,42 @@ namespace PathPlanner.ViewModel
 								{
 										_timer.Stop();
 										DrawPathExecute(parameter);
+										_running = false; 
 								}
 								DrawPointsExecute(parameter);
 						});
 						_timer.Start();
+						_running = true;
 				}
 
+				private bool PauseCanExecute(object parameter)
+				{
+						return _running;
+				}
+
+				public void PauseExecute(object parameter)
+				{
+						_timer.Stop();
+						_running = false;
+				}
+
+				private bool StopCanExecute(object parameter)
+				{
+						return true;
+				}
+
+				public void StopExecute(object parameter)
+				{
+						_timer.Stop();
+						planner.Reset();
+						/*
+						Model.Point start = new Model.Point(200, 40);
+						Model.Point end = new Model.Point(400, 200);
+						planner = new Model.Planner(_bm, start, end);
+						*/
+						DrawPointsExecute(parameter);
+						_running = false;
+				}
 
 		}
 }
