@@ -13,8 +13,32 @@ namespace PathPlanner.Model
 				public List<Force> Forces { get; set; }
 				public Point Actual { get; set; }
 				public Point Start { get; set; }
-				public double GoalAttraction { get; set; }
-				public double PointRepulsion { get; set; }
+
+				private double _goalAttraction;
+				public double GoalAttraction
+				{
+						get => _goalAttraction;
+						set
+						{
+								_goalAttraction = value;
+								Forces[0].Strength = _goalAttraction;
+						}
+				}
+
+				private double _pointRepulsion;
+				public double PointRepulsion
+
+				{
+						get => _pointRepulsion;
+						set
+						{
+								_pointRepulsion = value;
+								for (int i = 1; i < Forces.Count; i++)
+								{
+										Forces[i].Strength = - _pointRepulsion;
+								}
+						}
+				}
 
 				public List<Point> Path { get; set; }
 

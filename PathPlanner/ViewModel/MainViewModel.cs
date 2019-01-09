@@ -25,24 +25,30 @@ namespace PathPlanner.ViewModel
 				private bool _running;
 				private Bitmap _bm;
 
-				private double _goalAttraction;
 				public string GoalAttraction
 				{
-						get => _goalAttraction.ToString("0.##");
+						get => planner.GoalAttraction.ToString("0.##");
 						set
 						{
-								bool ok = double.TryParse(value, out _goalAttraction);
+								bool ok = double.TryParse(value, out double goalAttraction);
+								if (ok)
+								{
+										planner.GoalAttraction = goalAttraction;
+								}
 								OnPropertyChanged("GoalAttraction");
 						}
 				}
 
-				private double _previousRepulsion;
 				public string PreviousRepulsion
 				{
-						get => _previousRepulsion.ToString("0.##");
+						get => planner.PointRepulsion.ToString("0.##");
 						set
 						{
-								bool ok = double.TryParse(value, out _previousRepulsion);
+								bool ok = double.TryParse(value, out double previousRepulsion);
+								if (ok)
+								{
+										planner.PointRepulsion = previousRepulsion;
+								}
 								OnPropertyChanged("PreviousRepulsion");
 						}
 				}
@@ -60,6 +66,8 @@ namespace PathPlanner.ViewModel
 						_timer = new DispatcherTimer();
 						WaitTimeMs = 50;
 						_running = false;
+						GoalAttraction = "100";
+						PreviousRepulsion = "1";
 				}
 
 				public event PropertyChangedEventHandler PropertyChanged;
