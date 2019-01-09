@@ -79,6 +79,7 @@ namespace PathPlanner.ViewModel
 						Canvas.SetLeft(actual, planner.Actual.PosX);
 						Canvas.SetTop(actual, planner.Actual.PosY);
 
+						/*
 						foreach (Model.Point point in planner.Path)
 						{
 								if (point.PosX == planner.End.PosX && point.PosY == planner.End.PosY)
@@ -100,7 +101,7 @@ namespace PathPlanner.ViewModel
 								Canvas.SetLeft(ellipse, point.PosX);
 								Canvas.SetTop(ellipse, point.PosY);
 						}
-
+						*/
 				}
 
 				private bool NextCanExecute(object parameter)
@@ -150,20 +151,20 @@ namespace PathPlanner.ViewModel
 						return true;
 				}
 
+
+				
 				public void AutoExecute(object parameter)
 				{
-						var timer = new DispatcherTimer();
-						timer.Interval = TimeSpan.FromMilliseconds(10);
-						timer.Tick += new EventHandler(async (object s, EventArgs a) =>
+						_timer.Tick += new EventHandler(async (object s, EventArgs a) =>
 						{
 								if (planner.NextStep())
 								{
-										timer.Stop();
+										_timer.Stop();
 										DrawPathExecute(parameter);
 								}
 								DrawPointsExecute(parameter);
 						});
-						timer.Start();
+						_timer.Start();
 				}
 
 

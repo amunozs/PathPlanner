@@ -9,6 +9,6 @@ namespace PathPlanner.Model
 		public class Force
 		{
 				public Point Point { get; set; }
-				public int Strength;
+				public double Strength;
 		}
 }

@@ -1,6 +1,8 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace PathPlanner.ViewModel
 {
@@ -19,6 +21,7 @@ namespace PathPlanner.ViewModel
 				public string ImgPath { get; set; }
 				public Canvas MapCanvas {get;set;}
 				public Model.Planner planner;
+				private DispatcherTimer _timer;
 
 				public MainViewModel(Canvas mapCanvas)
 				{
@@ -30,6 +33,8 @@ namespace PathPlanner.ViewModel
 						Model.Point start = new Model.Point (200,40);
 						Model.Point end = new Model.Point (400,200);
 						planner = new Model.Planner(bm, start,end);
+						_timer = new DispatcherTimer();
+						WaitTimeMs = 50;
 				}
 
 				public event PropertyChangedEventHandler PropertyChanged;
@@ -41,8 +46,17 @@ namespace PathPlanner.ViewModel
 								handler(this, new PropertyChangedEventArgs(name));
 						}
 				}
+
+				private int _waitTime;
+				public int WaitTimeMs
+				{
+						get => _waitTime;
+						set
+						{
+								_waitTime = value;
+								_timer.Interval = TimeSpan.FromMilliseconds(100 - _waitTime);
+								OnPropertyChanged("WaitTimeMs");
+						}
+				}
 		}
-
-
-
 }

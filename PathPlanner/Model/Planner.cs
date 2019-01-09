@@ -60,6 +60,10 @@ namespace PathPlanner.Model
 
 						List<Point> neighs = GetValidNeighs(Actual);
 						double maxForce = GetForce (Actual);			
+						if (_actual_frozen)
+						{
+								maxForce = double.NegativeInfinity;
+						}
 						Point maxForceNeigh = null;
 						bool freezeActualPoint = true;
 						foreach (Point neigh in neighs)
@@ -83,6 +87,7 @@ namespace PathPlanner.Model
 						else
 						{
 								Force force = new Force() { Point = Actual, Strength = -1 };
+								Forces[0].Strength++;
 								Forces.Add(force);
 								_actual_frozen = true;
 								if (Actual.PosX == End.PosX && Actual.PosY == End.PosY)
@@ -149,6 +154,19 @@ namespace PathPlanner.Model
 						{
 								return false;
 						}
+
+						foreach (Force f in Forces)
+						{
+								if (f.Point.PosX == End.PosX && f.Point.PosY == End.PosY)
+								{
+										continue;
+								}
+								if (f.Point.PosX == point.PosX && f.Point.PosY == point.PosY)
+								{
+										return false;
+								}
+						}
+
 						return true;
 				}
 
