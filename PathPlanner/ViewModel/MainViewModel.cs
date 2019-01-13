@@ -25,6 +25,40 @@ namespace PathPlanner.ViewModel
 				private bool _running;
 				private Bitmap _bm;
 
+				private double _zoom = 1;
+				public double Zoom
+				{
+						get => _zoom;
+						set
+						{
+								_zoom = value;
+								OnPropertyChanged("Zoom");
+						}
+				}
+
+				private double _xoffset = 0;
+				public double XOffset
+				{
+						get => _xoffset;
+						set
+						{
+								_xoffset = value;
+								OnPropertyChanged("XOffset");
+						}
+				}
+
+				private double _yoffset = 0;
+				public double YOffset
+				{
+						get => _yoffset;
+						set
+						{
+								_yoffset = value;
+								OnPropertyChanged("YOffset");
+						}
+				}
+
+
 				public string GoalAttraction
 				{
 						get => planner.GoalAttraction.ToString("0.##");

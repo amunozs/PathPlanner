@@ -80,14 +80,18 @@ namespace PathPlanner.ViewModel
 
 						if (planner.Actual != null)
 						{
-								Ellipse actual = new Ellipse();
-								actual.Fill = Brushes.Green;
-								actual.Width = 5;
-								actual.Height = 5;
-								actual.StrokeThickness = 4;
-								MapCanvas.Children.Add(actual);
-								Canvas.SetLeft(actual, planner.Actual.PosX);
-								Canvas.SetTop(actual, planner.Actual.PosY);
+								foreach (var p in planner.Actual)
+									{
+										Ellipse actual = new Ellipse();
+										actual.Fill = Brushes.Green;
+										actual.Width = 5;
+										actual.Height = 5;
+										actual.StrokeThickness = 4;
+										MapCanvas.Children.Add(actual);
+										Canvas.SetLeft(actual, p.PosX);
+										Canvas.SetTop(actual, p.PosY);
+								}
+								
 						}
 						
 
