@@ -44,18 +44,30 @@ namespace PathPlanner.ViewModel
 						MapCanvas.Children.Clear();
 						foreach (Force force in planner.Forces)
 						{
-								if (force.Point.PosX == planner.End.PosX && force.Point.PosY == planner.End.PosY)
+								if (force.PosX == planner.End.PosX && force.PosY == planner.End.PosY)
 								{
 										continue;
 								}
+
 								Ellipse ellipse = new Ellipse();
+
+								if (force.Frozen)
+								{
+										ellipse.Width = 3;
+										ellipse.Height = 3;
+										ellipse.StrokeThickness = 2;
+								}
+								else
+								{
+										ellipse.Width = 5;
+										ellipse.Height = 5;
+										ellipse.StrokeThickness = 4;
+								}
+
 								ellipse.Fill = Brushes.Green;
-								ellipse.Width = 3;
-								ellipse.Height = 3;
-								ellipse.StrokeThickness = 2;
 								MapCanvas.Children.Add(ellipse);
-								Canvas.SetLeft(ellipse, force.Point.PosX);
-								Canvas.SetTop(ellipse, force.Point.PosY);
+								Canvas.SetLeft(ellipse, force.PosX);
+								Canvas.SetTop(ellipse, force.PosY);
 						}
 
 						Ellipse start = new Ellipse();
@@ -78,7 +90,7 @@ namespace PathPlanner.ViewModel
 
 						
 
-						if (planner.Actual != null)
+						/*if (planner.Actual != null)
 						{
 								foreach (var p in planner.Actual)
 									{
@@ -92,7 +104,7 @@ namespace PathPlanner.ViewModel
 										Canvas.SetTop(actual, p.PosY);
 								}
 								
-						}
+						}*/
 						
 
 						/*
@@ -139,7 +151,8 @@ namespace PathPlanner.ViewModel
 
 				public void DrawPathExecute (object parameter)
 				{
-						foreach (Model.Point point in planner.Path)
+						/*
+						foreach (Model.Force point in planner.Path)
 						{
 								if (point.PosX == planner.End.PosX && point.PosY == planner.End.PosY)
 								{
@@ -160,11 +173,12 @@ namespace PathPlanner.ViewModel
 								Canvas.SetLeft(ellipse, point.PosX);
 								Canvas.SetTop(ellipse, point.PosY);
 						}
+						*/
 				}
 				
 				private bool PlayCanExecute(object parameter)
 				{
-						return !_running;
+						return !_running && PlannerCreated;
 				}
 
 				public void PlayExecute(object parameter)

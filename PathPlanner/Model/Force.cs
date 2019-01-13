@@ -8,7 +8,19 @@ namespace PathPlanner.Model
 {
 		public class Force
 		{
-				public Point Point { get; set; }
 				public double Strength;
+				public bool IsGoal = false;
+
+				public int PosX;
+				public int PosY;
+				public bool Frozen = false;
+				public Force(int posX, int posY, double strength = 0, bool isGoal = false)
+				{
+						PosX = posX;
+						PosY = posY;
+						IsGoal = isGoal;
+						Strength = strength;
+		}
+
 		}
 }

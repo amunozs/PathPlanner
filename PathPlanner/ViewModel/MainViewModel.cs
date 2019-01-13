@@ -58,14 +58,37 @@ namespace PathPlanner.ViewModel
 						}
 				}
 
+				private bool _plannerCreated = false;
+				public bool PlannerCreated
+				{
+						get => _plannerCreated;
+						set
+						{
+								_plannerCreated = value;
+								OnPropertyChanged("PlannerCreated");
+						}
+				}
+
+				public void CreatePlanner ()
+				{
+						planner = new Model.Planner(_bm, Start, End);
+						PlannerCreated = true;
+				}
 
 				public string GoalAttraction
 				{
-						get => planner.GoalAttraction.ToString("0.##");
+						get
+						{
+								if (PlannerCreated)
+								{
+										return planner.GoalAttraction.ToString("0.##");
+								}
+								else return "100";
+						}
 						set
 						{
 								bool ok = double.TryParse(value, out double goalAttraction);
-								if (ok)
+								if (ok && PlannerCreated)
 								{
 										planner.GoalAttraction = goalAttraction;
 								}
@@ -75,17 +98,27 @@ namespace PathPlanner.ViewModel
 
 				public string PreviousRepulsion
 				{
-						get => planner.PointRepulsion.ToString("0.##");
+						get
+						{
+								if (PlannerCreated)
+								{
+										return planner.PointRepulsion.ToString("0.##");
+								}
+								else return "-1";
+						}
 						set
 						{
 								bool ok = double.TryParse(value, out double previousRepulsion);
-								if (ok)
+								if (ok && PlannerCreated)
 								{
 										planner.PointRepulsion = previousRepulsion;
 								}
 								OnPropertyChanged("PreviousRepulsion");
 						}
 				}
+
+				public Model.Force Start { get; set; }
+				public Model.Force End { get; set; }
 
 				public MainViewModel(Canvas mapCanvas)
 				{
@@ -94,9 +127,9 @@ namespace PathPlanner.ViewModel
 
 						MapCanvas = mapCanvas;
 						_bm = new Bitmap(ImgPath);
-						Model.Point start = new Model.Point (200,40);
-						Model.Point end = new Model.Point (400,200);
-						planner = new Model.Planner(_bm, start,end);
+						Model.Force start = Start;
+						Model.Force end = End;
+						
 						_timer = new DispatcherTimer();
 						WaitTimeMs = 50;
 						_running = false;

@@ -65,5 +65,24 @@ namespace PathPlanner
 						((MainViewModel)DataContext).XOffset = e.GetPosition(this).X - initial.X;
 						((MainViewModel)DataContext).YOffset = e.GetPosition(this).Y - initial.Y;
 				}
+
+				bool start = false;
+				bool end = false;
+				private void MapCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+				{
+						if (! start)
+						{
+								Model.Force f = new Model.Force((int)e.GetPosition(this).X, (int)e.GetPosition(this).Y);
+								((MainViewModel)DataContext).Start = f;
+								start = true;
+						}
+						else if (!end)
+						{
+								Model.Force f = new Model.Force((int)e.GetPosition(this).X, (int)e.GetPosition(this).Y);
+								((MainViewModel)DataContext).End = f;
+								end = true;
+								((MainViewModel)DataContext).CreatePlanner();
+						}
+				}
 		}
 }

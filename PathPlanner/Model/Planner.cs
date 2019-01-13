@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 
 namespace PathPlanner.Model
 {
@@ -11,8 +10,8 @@ namespace PathPlanner.Model
 				private int _height;
 
 				public List<Force> Forces { get; set; }
-				public List<Point> Actual { get; set; }
-				public Point Start { get; set; }
+				//public List<Point> Actual { get; set; }
+				public Force Start { get; set; }
 
 				private double _goalAttraction;
 				public double GoalAttraction
@@ -21,7 +20,7 @@ namespace PathPlanner.Model
 						set
 						{
 								_goalAttraction = value;
-								Forces[0].Strength = _goalAttraction;
+								End.Strength = _goalAttraction;
 						}
 				}
 
@@ -40,69 +39,47 @@ namespace PathPlanner.Model
 						}
 				}
 
-				public List<Point> Path { get; set; }
+				//public List<Force> Path { get; set; }
 
-				private bool _actual_frozen = true;
-
-				private Point _end = new Point (0,0);
-				public Point End
+				private Force _end;
+				public Force End
 				{
 						get => _end;
 						set
 						{
 								if (value.PosX != _end.PosX || value.PosY != _end.PosY)
-								{
-										for (int i = 0; i < Forces.Count; i++)
-										{
-												if (Forces[i].Point.PosX != _end.PosX || Forces[i].Point.PosY != _end.PosY )
-												{
-														Forces.RemoveAt(i);
-												}
-										}
-										Force f = new Force();
-										f.Point = value;
-										f.Strength = GoalAttraction;
-										Forces.Add(f);
-										_end = value;
+								{								
+										_end.PosX = value.PosX;
+										_end.PosY = value.PosY;
 								}
 						}
 				}
 
-				public Planner(Bitmap map, Point start, Point end)
+				public Planner(System.Drawing.Bitmap map, Force start, Force end)
 				{
 						GetGrid(map);
 						Forces = new List<Force>();
 						Start = start;
+						_end = end;
 						End = end;
+						End.IsGoal = true;
 						GoalAttraction = 100;
 						PointRepulsion = 1;
-						Actual = new List<Point>();
+						//Actual = new List<Point>();
 				}
 
-				public bool NextStep ()
+				private bool NextStepInternal (int index)
 				{
-						if (_actual_frozen)
-						{
-								if (Actual.Count == 0)
-								{
-										Actual.Add(new Point(Start.PosX, Start.PosY));
-								}
-								else
-								{
-										Actual[0] = new Point(Start.PosX, Start.PosY);
-								}
-								Path = new List<Point>();
-						}
 
-						List<Point> neighs = GetValidNeighs(Actual[0]);
-						double maxForce = GetForce (Actual[0]);			
-						if (_actual_frozen)
+						List<Force> neighs = GetValidNeighs(Forces[index]);
+						double maxForce = double.NegativeInfinity;
+						if (Forces[index].Frozen)
 						{
 								maxForce = double.NegativeInfinity;
 						}
-						Point maxForceNeigh = null;
+						Force maxForceNeigh = null;
 						bool freezeActualPoint = true;
-						foreach (Point neigh in neighs)
+						foreach (Force neigh in neighs)
 						{
 								double force = GetForce(neigh);
 								if (force > maxForce)
@@ -115,18 +92,19 @@ namespace PathPlanner.Model
 
 						if (!freezeActualPoint)
 						{
-								Path.Add(Actual[0]);
-								Actual[0] = maxForceNeigh;
-								_actual_frozen = false;							
+								//Path.Add(Actual[index]);
+								Forces[index].PosX = maxForceNeigh.PosX;
+								Forces[index].PosY = maxForceNeigh.PosY;
+								//Forces[index].Frozen = false;
 						}
 
 						else
 						{
-								Force force = new Force() { Point = Actual[0], Strength = - PointRepulsion };
+								//Force force = new Force() { Point = Actual[index], -PointRepulsion };
 								//Forces[0].Strength++;
-								Forces.Add(force);
-								_actual_frozen = true;
-								if (Actual[0].PosX == End.PosX && Actual[0].PosY == End.PosY)
+								//Forces.Add(force);
+								//Forces[index].Frozen = true;
+								if (Forces[index].PosX == End.PosX && Forces[index].PosY == End.PosY)
 								{
 										return true;
 								}
@@ -136,52 +114,77 @@ namespace PathPlanner.Model
 
 				}
 
+				public bool NextStep ()
+				{
+						if (Forces.Count < 300)
+						{
+								Forces.Add(new Force(Start.PosX, Start.PosY,-PointRepulsion));
+								//Path = new List<Point>();
+						}
+						for (int i = 0; i < Forces.Count; i ++)
+						{
+								if (NextStepInternal(i))
+								{
+										return true;
+								}
+						}
+						return false;
+				}
+
 				public void Reset ()
 				{
 						Forces = new List<Force>();
-						Force f = new Force();
-						f.Point = End;
-						f.Strength = 100;
-						Forces.Add(f);
-						Actual = null;
-						_actual_frozen = true;
+						Forces.Add(_end);
+						//Actual = new List<Point>();
 				}
 
-				private double GetForce (Point point)
+				private double GetForce (Force point)
 				{
 						double force = 0;
 						if (_grid[point.PosX, point.PosY] == 0)
 						{
-								return 0;
+								return double.NegativeInfinity;
 						}
+
+						double dist = (Math.Pow(point.PosX - End.PosX, 2) + Math.Pow(point.PosY - End.PosY, 2));
+						if (dist < 0)
+						{
+								dist = -dist;
+						}
+						force += End.Strength / dist;
+
 						foreach (Force f in Forces)
 						{
-								double dist = (Math.Pow(point.PosX - f.Point.PosX, 2) + Math.Pow(point.PosY - f.Point.PosY, 2));
+								if (f == point)
+								{
+										continue;
+								}
+								dist = (Math.Pow(point.PosX - f.PosX, 2) + Math.Pow(point.PosY - f.PosY, 2));
 								if (dist < 0)
 								{
 										dist = -dist;
 								}
 								force += f.Strength / dist;
 						}
-						
+
 						return force;
 				}
 
-				private List<Point> GetValidNeighs (Point point)
+				private List<Force> GetValidNeighs (Force point)
 				{
-						List<Point> possibleNeighs = new List<Point>();
+						List<Force> possibleNeighs = new List<Force>();
 
-						possibleNeighs.Add(new Point(point.PosX - 1, point.PosY - 1));
-						possibleNeighs.Add(new Point(point.PosX - 1, point.PosY));
-						possibleNeighs.Add(new Point(point.PosX - 1, point.PosY + 1));
-						possibleNeighs.Add(new Point(point.PosX, point.PosY -1));
-						possibleNeighs.Add(new Point(point.PosX, point.PosY + 1));
-						possibleNeighs.Add(new Point(point.PosX + 1, point.PosY - 1));
-						possibleNeighs.Add(new Point(point.PosX + 1, point.PosY));
-						possibleNeighs.Add(new Point(point.PosX + 1, point.PosY + 1));
+						possibleNeighs.Add(new Force(point.PosX - 1, point.PosY - 1));
+						possibleNeighs.Add(new Force(point.PosX - 1, point.PosY));
+						possibleNeighs.Add(new Force(point.PosX - 1, point.PosY + 1));
+						possibleNeighs.Add(new Force(point.PosX, point.PosY -1));
+						possibleNeighs.Add(new Force(point.PosX, point.PosY + 1));
+						possibleNeighs.Add(new Force(point.PosX + 1, point.PosY - 1));
+						possibleNeighs.Add(new Force(point.PosX + 1, point.PosY));
+						possibleNeighs.Add(new Force(point.PosX + 1, point.PosY + 1));
 
-						List<Point> validNeighs = new List<Point>();
-						foreach (Point p in possibleNeighs)
+						List<Force> validNeighs = new List<Force>();
+						foreach (Force p in possibleNeighs)
 						{
 								if (IsValid(p))
 								{
@@ -191,7 +194,7 @@ namespace PathPlanner.Model
 						return validNeighs;
 				}
 
-				private bool IsValid (Point point)
+				private bool IsValid (Force point)
 				{
 						if (point.PosX < 0 || point.PosX >= _width)
 						{
@@ -204,11 +207,11 @@ namespace PathPlanner.Model
 
 						foreach (Force f in Forces)
 						{
-								if (f.Point.PosX == End.PosX && f.Point.PosY == End.PosY)
+								if (f.IsGoal)
 								{
 										continue;
 								}
-								if (f.Point.PosX == point.PosX && f.Point.PosY == point.PosY)
+								if (f.PosX == point.PosX && f.PosY == point.PosY)
 								{
 										return false;
 								}
@@ -217,7 +220,7 @@ namespace PathPlanner.Model
 						return true;
 				}
 
-				private void GetGrid(Bitmap bitmap)
+				private void GetGrid(System.Drawing.Bitmap bitmap)
 				{
 						_width = bitmap.Size.Width;
 						_height = bitmap.Size.Height;
