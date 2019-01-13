@@ -11,7 +11,7 @@ namespace PathPlanner.Model
 				private int _height;
 
 				public List<Force> Forces { get; set; }
-				public Point Actual { get; set; }
+				public List<Point> Actual { get; set; }
 				public Point Start { get; set; }
 
 				private double _goalAttraction;
@@ -76,18 +76,26 @@ namespace PathPlanner.Model
 						End = end;
 						GoalAttraction = 100;
 						PointRepulsion = 1;
+						Actual = new List<Point>();
 				}
 
 				public bool NextStep ()
 				{
 						if (_actual_frozen)
 						{
-								Actual = new Point(Start.PosX, Start.PosY);
+								if (Actual.Count == 0)
+								{
+										Actual.Add(new Point(Start.PosX, Start.PosY));
+								}
+								else
+								{
+										Actual[0] = new Point(Start.PosX, Start.PosY);
+								}
 								Path = new List<Point>();
 						}
 
-						List<Point> neighs = GetValidNeighs(Actual);
-						double maxForce = GetForce (Actual);			
+						List<Point> neighs = GetValidNeighs(Actual[0]);
+						double maxForce = GetForce (Actual[0]);			
 						if (_actual_frozen)
 						{
 								maxForce = double.NegativeInfinity;
@@ -107,18 +115,18 @@ namespace PathPlanner.Model
 
 						if (!freezeActualPoint)
 						{
-								Path.Add(Actual);
-								Actual = maxForceNeigh;
+								Path.Add(Actual[0]);
+								Actual[0] = maxForceNeigh;
 								_actual_frozen = false;							
 						}
 
 						else
 						{
-								Force force = new Force() { Point = Actual, Strength = - PointRepulsion };
+								Force force = new Force() { Point = Actual[0], Strength = - PointRepulsion };
 								//Forces[0].Strength++;
 								Forces.Add(force);
 								_actual_frozen = true;
-								if (Actual.PosX == End.PosX && Actual.PosY == End.PosY)
+								if (Actual[0].PosX == End.PosX && Actual[0].PosY == End.PosY)
 								{
 										return true;
 								}
