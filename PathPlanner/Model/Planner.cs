@@ -9,6 +9,8 @@ namespace PathPlanner.Model
 				const int maxParalel = 2000;
 				const bool freeze = false;
 
+				public List<Point> Path;
+
 				private int[,] _grid;
 				private int _width;
 				private int _height;
@@ -51,10 +53,10 @@ namespace PathPlanner.Model
 						get => _end;
 						set
 						{
-								if (value.PosX != _end.PosX || value.PosY != _end.PosY)
+								if (value.Pos.X != _end.Pos.X || value.Pos.Y != _end.Pos.Y)
 								{								
-										_end.PosX = value.PosX;
-										_end.PosY = value.PosY;
+										_end.Pos.X = value.Pos.X;
+										_end.Pos.Y = value.Pos.Y;
 								}
 						}
 				}
@@ -98,8 +100,9 @@ namespace PathPlanner.Model
 						if (!freezeActualPoint)
 						{
 								//Path.Add(Actual[index]);
-								Forces[index].PosX = maxForceNeigh.PosX;
-								Forces[index].PosY = maxForceNeigh.PosY;
+								Forces[index].SavePoint();
+								Forces[index].Pos.X = maxForceNeigh.Pos.X;
+								Forces[index].Pos.Y = maxForceNeigh.Pos.Y;
 								//Forces[index].Frozen = false;
 						}
 
@@ -109,8 +112,9 @@ namespace PathPlanner.Model
 								//Forces[0].Strength++;
 								//Forces.Add(force);
 								Forces[index].Frozen = true;
-								if (Forces[index].PosX == End.PosX && Forces[index].PosY == End.PosY)
+								if (Forces[index].Pos.X == End.Pos.X && Forces[index].Pos.Y == End.Pos.Y)
 								{
+										Path = Forces[index].Path;
 										return true;
 								}
 						}
@@ -138,7 +142,7 @@ namespace PathPlanner.Model
 
 						if(notFrozen < maxParalel)
 						{
-								Forces.Add(new Force(Start.PosX, Start.PosY,-PointRepulsion));
+								Forces.Add(new Force(Start.Pos.X, Start.Pos.Y,-PointRepulsion));
 								count++;
 								//Path = new List<Point>();
 						}
@@ -162,12 +166,12 @@ namespace PathPlanner.Model
 				private double GetForce (Force point, Force original)
 				{
 						double force = 0;
-						if (_grid[point.PosX, point.PosY] == 0)
+						if (_grid[point.Pos.X, point.Pos.Y] == 0)
 						{
 								return double.NegativeInfinity;
 						}
 
-						double dist = (Math.Pow(point.PosX - End.PosX, 2) + Math.Pow(point.PosY - End.PosY, 2));
+						double dist = (Math.Pow(point.Pos.X - End.Pos.X, 2) + Math.Pow(point.Pos.Y - End.Pos.Y, 2));
 						if (dist < 0)
 						{
 								dist = -dist;
@@ -180,7 +184,7 @@ namespace PathPlanner.Model
 								{
 										continue;
 								}
-								dist = (Math.Pow(point.PosX - f.PosX, 2) + Math.Pow(point.PosY - f.PosY, 2));
+								dist = (Math.Pow(point.Pos.X - f.Pos.X, 2) + Math.Pow(point.Pos.Y - f.Pos.Y, 2));
 								if (dist < 0)
 								{
 										dist = -dist;
@@ -195,14 +199,14 @@ namespace PathPlanner.Model
 				{
 						List<Force> possibleNeighs = new List<Force>();
 
-						possibleNeighs.Add(new Force(point.PosX - 1, point.PosY - 1));
-						possibleNeighs.Add(new Force(point.PosX - 1, point.PosY));
-						possibleNeighs.Add(new Force(point.PosX - 1, point.PosY + 1));
-						possibleNeighs.Add(new Force(point.PosX, point.PosY -1));
-						possibleNeighs.Add(new Force(point.PosX, point.PosY + 1));
-						possibleNeighs.Add(new Force(point.PosX + 1, point.PosY - 1));
-						possibleNeighs.Add(new Force(point.PosX + 1, point.PosY));
-						possibleNeighs.Add(new Force(point.PosX + 1, point.PosY + 1));
+						possibleNeighs.Add(new Force(point.Pos.X - 1, point.Pos.Y - 1));
+						possibleNeighs.Add(new Force(point.Pos.X - 1, point.Pos.Y));
+						possibleNeighs.Add(new Force(point.Pos.X - 1, point.Pos.Y + 1));
+						possibleNeighs.Add(new Force(point.Pos.X, point.Pos.Y -1));
+						possibleNeighs.Add(new Force(point.Pos.X, point.Pos.Y + 1));
+						possibleNeighs.Add(new Force(point.Pos.X + 1, point.Pos.Y - 1));
+						possibleNeighs.Add(new Force(point.Pos.X + 1, point.Pos.Y));
+						possibleNeighs.Add(new Force(point.Pos.X + 1, point.Pos.Y + 1));
 
 						List<Force> validNeighs = new List<Force>();
 						foreach (Force p in possibleNeighs)
@@ -217,11 +221,11 @@ namespace PathPlanner.Model
 
 				private bool IsValid (Force point)
 				{
-						if (point.PosX < 0 || point.PosX >= _width)
+						if (point.Pos.X < 0 || point.Pos.X >= _width)
 						{
 								return false;
 						}
-						if (point.PosY < 0 || point.PosY >= _height)
+						if (point.Pos.Y < 0 || point.Pos.Y >= _height)
 						{
 								return false;
 						}
@@ -232,7 +236,7 @@ namespace PathPlanner.Model
 								{
 										continue;
 								}
-								if (f.PosX == point.PosX && f.PosY == point.PosY)
+								if (f.Pos.X == point.Pos.X && f.Pos.Y == point.Pos.Y)
 								{
 										return false;
 								}

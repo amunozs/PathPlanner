@@ -15,6 +15,8 @@ namespace PathPlanner.ViewModel
 		{
 				public ICommand DrawPointsCommand { get; set; }
 
+				public ICommand DrawPathCommand { get; set; }
+
 				public ICommand NextCommand { get; set; }
 
 				public ICommand PlayCommand { get; set; }
@@ -26,6 +28,7 @@ namespace PathPlanner.ViewModel
 				private void CreateCommands()
 				{
 						DrawPointsCommand = new RelayCommand(DrawPointsExecute, DrawPointsCanExecute);
+						DrawPathCommand = new RelayCommand(DrawPathExecute, DrawPathCanExecute);
 						NextCommand = new RelayCommand(NextExecute, NextCanExecute);
 						PlayCommand = new RelayCommand(PlayExecute, PlayCanExecute);
 						PauseCommand = new RelayCommand(PauseExecute, PauseCanExecute);
@@ -44,7 +47,7 @@ namespace PathPlanner.ViewModel
 						MapCanvas.Children.Clear();
 						foreach (Force force in planner.Forces)
 						{
-								if (force.PosX == planner.End.PosX && force.PosY == planner.End.PosY)
+								if (force.Pos.X == planner.End.Pos.X && force.Pos.Y == planner.End.Pos.Y)
 								{
 										continue;
 								}
@@ -64,72 +67,29 @@ namespace PathPlanner.ViewModel
 										ellipse.StrokeThickness = 4;
 								}
 
-								ellipse.Fill = Brushes.Green;
+								ellipse.Fill = Brushes.Blue;
 								MapCanvas.Children.Add(ellipse);
-								Canvas.SetLeft(ellipse, force.PosX);
-								Canvas.SetTop(ellipse, force.PosY);
+								Canvas.SetLeft(ellipse, force.Pos.X);
+								Canvas.SetTop(ellipse, force.Pos.Y);
 						}
 
 						Ellipse start = new Ellipse();
-						start.Fill = Brushes.Blue;
-						start.Width = 3;
-						start.Height = 3;
-						start.StrokeThickness = 2;
+						start.Fill = Brushes.Green;
+						start.Width = 5;
+						start.Height = 5;
+						start.StrokeThickness = 4;
 						MapCanvas.Children.Add(start);
-						Canvas.SetLeft(start, planner.Start.PosX);
-						Canvas.SetTop(start, planner.Start.PosY);
+						Canvas.SetLeft(start, planner.Start.Pos.X);
+						Canvas.SetTop(start, planner.Start.Pos.Y);
 
 						Ellipse goal = new Ellipse();
 						goal.Fill = Brushes.Red;
-						goal.Width = 3;
-						goal.Height = 3;
-						goal.StrokeThickness = 2;
+						goal.Width = 5;
+						goal.Height = 5;
+						goal.StrokeThickness = 4;
 						MapCanvas.Children.Add(goal);
-						Canvas.SetLeft(goal, planner.End.PosX);
-						Canvas.SetTop(goal, planner.End.PosY);
-
-						
-
-						/*if (planner.Actual != null)
-						{
-								foreach (var p in planner.Actual)
-									{
-										Ellipse actual = new Ellipse();
-										actual.Fill = Brushes.Green;
-										actual.Width = 5;
-										actual.Height = 5;
-										actual.StrokeThickness = 4;
-										MapCanvas.Children.Add(actual);
-										Canvas.SetLeft(actual, p.PosX);
-										Canvas.SetTop(actual, p.PosY);
-								}
-								
-						}*/
-						
-
-						/*
-						foreach (Model.Point point in planner.Path)
-						{
-								if (point.PosX == planner.End.PosX && point.PosY == planner.End.PosY)
-								{
-										continue;
-								}
-
-								if (point.PosX == planner.Start.PosX && point.PosY == planner.Start.PosY)
-								{
-										continue;
-								}
-
-								Ellipse ellipse = new Ellipse();
-								ellipse.Fill = Brushes.Green;
-								ellipse.Width = 3;
-								ellipse.Height = 3;
-								ellipse.StrokeThickness = 2;
-								MapCanvas.Children.Add(ellipse);
-								Canvas.SetLeft(ellipse, point.PosX);
-								Canvas.SetTop(ellipse, point.PosY);
-						}
-						*/
+						Canvas.SetLeft(goal, planner.End.Pos.X);
+						Canvas.SetTop(goal, planner.End.Pos.Y);
 				}
 
 				private bool NextCanExecute(object parameter)
@@ -151,29 +111,29 @@ namespace PathPlanner.ViewModel
 
 				public void DrawPathExecute (object parameter)
 				{
-						/*
-						foreach (Model.Force point in planner.Path)
+						MapCanvas.Children.Clear();
+						foreach (Model.Point point in planner.Path)
 						{
-								if (point.PosX == planner.End.PosX && point.PosY == planner.End.PosY)
+								if (point.X == planner.End.Pos.X && point.Y == planner.End.Pos.Y)
 								{
 										continue;
 								}
 
-								if (point.PosX == planner.Start.PosX && point.PosY == planner.Start.PosY)
+								if (point.X == planner.Start.Pos.X && point.Y == planner.Start.Pos.Y)
 								{
 										continue;
 								}
 
 								Ellipse ellipse = new Ellipse();
-								ellipse.Fill = Brushes.Green;
+								ellipse.Fill = Brushes.Blue;
 								ellipse.Width = 3;
 								ellipse.Height = 3;
 								ellipse.StrokeThickness = 2;
 								MapCanvas.Children.Add(ellipse);
-								Canvas.SetLeft(ellipse, point.PosX);
-								Canvas.SetTop(ellipse, point.PosY);
+								Canvas.SetLeft(ellipse, point.X);
+								Canvas.SetTop(ellipse, point.Y);
 						}
-						*/
+						
 				}
 				
 				private bool PlayCanExecute(object parameter)
@@ -187,11 +147,16 @@ namespace PathPlanner.ViewModel
 						{
 								if (planner.NextStep())
 								{
+										DrawPathCommand.Execute(parameter);
 										_timer.Stop();
-										DrawPathExecute(parameter);
+										
 										_running = false; 
 								}
-								DrawPointsExecute(parameter);
+								else
+								{
+										DrawPointsExecute(parameter);
+								}
+								
 						});
 						_timer.Start();
 						_running = true;

@@ -47,6 +47,17 @@ namespace PathPlanner.ViewModel
 						}
 				}
 
+				private double _maxUnfrozen = 0;
+				public double MaxUnfrozen
+				{
+						get => _maxUnfrozen;
+						set
+						{
+								_xoffset = value;
+								OnPropertyChanged("XOffset");
+						}
+				}
+
 				private double _yoffset = 0;
 				public double YOffset
 				{
@@ -72,46 +83,46 @@ namespace PathPlanner.ViewModel
 				public void CreatePlanner ()
 				{
 						planner = new Model.Planner(_bm, Start, End);
+						planner.GoalAttraction = _goalAttraction;
+						planner.PointRepulsion = _previousRepulsion;
 						PlannerCreated = true;
 				}
 
+				private double _goalAttraction;
 				public string GoalAttraction
 				{
-						get
-						{
-								if (PlannerCreated)
-								{
-										return planner.GoalAttraction.ToString("0.##");
-								}
-								else return "100";
-						}
+						get => _goalAttraction.ToString("0.##");
 						set
 						{
 								bool ok = double.TryParse(value, out double goalAttraction);
-								if (ok && PlannerCreated)
+								if (ok)
 								{
-										planner.GoalAttraction = goalAttraction;
+										_goalAttraction = goalAttraction;
+										if (PlannerCreated)
+										{
+												planner.GoalAttraction = goalAttraction;
+										}
+									
 								}
 								OnPropertyChanged("GoalAttraction");
 						}
 				}
 
+				private double _previousRepulsion;
 				public string PreviousRepulsion
 				{
-						get
-						{
-								if (PlannerCreated)
-								{
-										return planner.PointRepulsion.ToString("0.##");
-								}
-								else return "-1";
-						}
+						get => _previousRepulsion.ToString("0.##");
 						set
 						{
 								bool ok = double.TryParse(value, out double previousRepulsion);
-								if (ok && PlannerCreated)
+								if (ok)
 								{
-										planner.PointRepulsion = previousRepulsion;
+										_previousRepulsion = previousRepulsion;
+										if (PlannerCreated)
+										{
+												planner.GoalAttraction = previousRepulsion;
+										}
+
 								}
 								OnPropertyChanged("PreviousRepulsion");
 						}
