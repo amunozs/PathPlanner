@@ -14,6 +14,7 @@ namespace PathPlanner.Model
 				public int PosX;
 				public int PosY;
 				public bool Frozen = false;
+
 				public Force(int posX, int posY, double strength = 0, bool isGoal = false)
 				{
 						PosX = posX;

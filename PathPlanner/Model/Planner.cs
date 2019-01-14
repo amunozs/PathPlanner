@@ -5,6 +5,10 @@ namespace PathPlanner.Model
 {
 		public class Planner
 		{
+
+				const int maxParalel = 2000;
+				const bool freeze = false;
+
 				private int[,] _grid;
 				private int _width;
 				private int _height;
@@ -72,16 +76,17 @@ namespace PathPlanner.Model
 				{
 
 						List<Force> neighs = GetValidNeighs(Forces[index]);
-						double maxForce = double.NegativeInfinity;
+						double maxForce = GetForce(Forces[index], Forces[index]);
 						if (Forces[index].Frozen)
 						{
+								return false;
 								maxForce = double.NegativeInfinity;
 						}
 						Force maxForceNeigh = null;
 						bool freezeActualPoint = true;
 						foreach (Force neigh in neighs)
 						{
-								double force = GetForce(neigh);
+								double force = GetForce(neigh, Forces[index]);
 								if (force > maxForce)
 								{
 										maxForce = force;
@@ -103,7 +108,7 @@ namespace PathPlanner.Model
 								//Force force = new Force() { Point = Actual[index], -PointRepulsion };
 								//Forces[0].Strength++;
 								//Forces.Add(force);
-								//Forces[index].Frozen = true;
+								Forces[index].Frozen = true;
 								if (Forces[index].PosX == End.PosX && Forces[index].PosY == End.PosY)
 								{
 										return true;
@@ -116,12 +121,28 @@ namespace PathPlanner.Model
 
 				public bool NextStep ()
 				{
-						if (Forces.Count < 300)
+						int notFrozen = 0;
+						int count = 0;
+						foreach(Force f in Forces)
+						{
+								count++;
+								if (!freeze)
+								{
+										f.Frozen = false;
+								}
+								if (!f.Frozen)
+								{
+										notFrozen++;
+								}
+						}
+
+						if(notFrozen < maxParalel)
 						{
 								Forces.Add(new Force(Start.PosX, Start.PosY,-PointRepulsion));
+								count++;
 								//Path = new List<Point>();
 						}
-						for (int i = 0; i < Forces.Count; i ++)
+						for (int i = 0; i < count; i ++)
 						{
 								if (NextStepInternal(i))
 								{
@@ -138,7 +159,7 @@ namespace PathPlanner.Model
 						//Actual = new List<Point>();
 				}
 
-				private double GetForce (Force point)
+				private double GetForce (Force point, Force original)
 				{
 						double force = 0;
 						if (_grid[point.PosX, point.PosY] == 0)
@@ -155,7 +176,7 @@ namespace PathPlanner.Model
 
 						foreach (Force f in Forces)
 						{
-								if (f == point)
+								if (f == original)
 								{
 										continue;
 								}
