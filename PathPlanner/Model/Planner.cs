@@ -6,8 +6,9 @@ namespace PathPlanner.Model
 		public class Planner
 		{
 
-				const int maxParalel = 2000;
+				const int maxParalel = 1;
 				const bool freeze = false;
+				const int _maxConsecUnfozen = 1;
 
 				public List<Point> Path;
 
@@ -79,7 +80,7 @@ namespace PathPlanner.Model
 
 						List<Force> neighs = GetValidNeighs(Forces[index]);
 						double maxForce = GetForce(Forces[index], Forces[index]);
-						if (Forces[index].Frozen)
+						if (Forces[index].ConsecutiveFrozen > _maxConsecUnfozen)
 						{
 								return false;
 								maxForce = double.NegativeInfinity;
@@ -130,10 +131,16 @@ namespace PathPlanner.Model
 						foreach(Force f in Forces)
 						{
 								count++;
+
+								if (f.ConsecutiveFrozen < _maxConsecUnfozen)
+								{
+										notFrozen++;
+								}
+								/*
 								if (!freeze)
 								{
 										f.Frozen = false;
-								}
+								}*/
 								if (!f.Frozen)
 								{
 										notFrozen++;
@@ -171,7 +178,7 @@ namespace PathPlanner.Model
 								return double.NegativeInfinity;
 						}
 
-						double dist = (Math.Pow(point.Pos.X - End.Pos.X, 2) + Math.Pow(point.Pos.Y - End.Pos.Y, 2));
+						double dist = ((point.Pos.X - End.Pos.X)*(point.Pos.X - End.Pos.X) + (point.Pos.Y - End.Pos.Y)* (point.Pos.Y - End.Pos.Y));
 						if (dist < 0)
 						{
 								dist = -dist;

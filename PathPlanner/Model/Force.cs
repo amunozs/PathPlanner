@@ -24,7 +24,21 @@ namespace PathPlanner.Model
 				public bool IsGoal = false;
 
 				public Point Pos;
-				public bool Frozen = false;
+				private bool _frozen;
+				public bool Frozen
+				{
+						get => _frozen;
+						set
+						{
+								if (_frozen  && value)
+								{
+										ConsecutiveFrozen++;
+								}
+								_frozen = value;
+						}
+				}
+
+				public int ConsecutiveFrozen = 0;
 
 				public List<Point> Path;
 
