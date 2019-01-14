@@ -29,15 +29,17 @@ namespace PathPlanner
 						this.DataContext = vm;
 				}
 
-				bool IsMouseDown;
-				double xOffset;
-				double yOffset;
+				bool first = false;
+				bool entering = false;
+				public double xOffset;
+				public double yOffset;
 				Point initial;
 
 				private void MapCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 				{
-						IsMouseDown = true;
-						initial = Mouse.GetPosition(this);
+						entering = false;
+						first = true;
+						initial = new Point(Mouse.GetPosition(this).X - xOffset, Mouse.GetPosition(this).Y - yOffset);
 				}
 
 				const double ScaleRate = 1.1;
@@ -55,15 +57,26 @@ namespace PathPlanner
 
 				private void MapCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
 				{
-						IsMouseDown = false;
+						
 				}
 
 				private void MapCanvas_MouseMove(object sender, MouseEventArgs e)
 				{
-						if (! (Mouse.LeftButton == MouseButtonState.Pressed)) return;
+						if (! (Mouse.LeftButton == MouseButtonState.Pressed) || entering) return;
+						if (first)
+						{
+								xOffset = e.GetPosition(this).X - initial.X;
+								yOffset = e.GetPosition(this).Y - initial.Y;
+								first = false;
+						}
+						else
+						{
+								xOffset = e.GetPosition(this).X - initial.X;
+								yOffset = e.GetPosition(this).Y - initial.Y;
+						}
 						
-						((MainViewModel)DataContext).XOffset = e.GetPosition(this).X - initial.X;
-						((MainViewModel)DataContext).YOffset = e.GetPosition(this).Y - initial.Y;
+						((MainViewModel)DataContext).XOffset = xOffset;
+						((MainViewModel)DataContext).YOffset = yOffset;
 				}
 
 				bool start = false;
@@ -72,17 +85,29 @@ namespace PathPlanner
 				{
 						if (! start)
 						{
-								Model.Force f = new Model.Force((int)e.GetPosition(this).X, (int)e.GetPosition(this).Y);
+								int x = (int)e.GetPosition(MapCanvas).X;
+								int y = (int)e.GetPosition(MapCanvas).Y;
+								Model.Force f = new Model.Force(x, y);
 								((MainViewModel)DataContext).Start = f;
 								start = true;
 						}
 						else if (!end)
 						{
-								Model.Force f = new Model.Force((int)e.GetPosition(this).X, (int)e.GetPosition(this).Y);
+								Model.Force f = new Model.Force((int)e.GetPosition(MapCanvas).X, (int)e.GetPosition(MapCanvas).Y);
 								((MainViewModel)DataContext).End = f;
 								end = true;
 								((MainViewModel)DataContext).CreatePlanner();
 						}
+				}
+
+				private void MapCanvas_MouseLeave(object sender, MouseEventArgs e)
+				{
+						
+				}
+
+				private void MapCanvas_MouseEnter(object sender, MouseEventArgs e)
+				{
+						entering = true;
 				}
 		}
 }

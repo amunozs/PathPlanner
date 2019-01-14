@@ -11,42 +11,44 @@
 				<vm:StateToTextConverter x:Key="StateToTextConverter" />
 		</Window.Resources>
 
-		<Grid Background="DarkGray">
+		<Grid x:Name="MapGrid" 
+				Background="DarkGray">
 				<Grid.RowDefinitions>
 						<RowDefinition Height="*"></RowDefinition>
 						<RowDefinition Height="50"></RowDefinition>
 				</Grid.RowDefinitions>
-				<ScrollViewer VerticalScrollBarVisibility="Auto" 
-																				HorizontalScrollBarVisibility="Auto"
-																				Grid.Row="0"
+				<Canvas x:Name="MapCanvas"
+															Grid.Row="0"
 																				Grid.Column="0"
-																				Grid.ColumnSpan="1">
-						<Canvas x:Name="MapCanvas"
+																				Grid.ColumnSpan="1"
 														MouseLeftButtonDown="MapCanvas_MouseLeftButtonDown"
 														MouseLeftButtonUp="MapCanvas_MouseLeftButtonUp"
 														MouseMove="MapCanvas_MouseMove"
 														MouseWheel="MapCanvas_MouseWheel"
 														MouseRightButtonDown="MapCanvas_MouseRightButtonDown"
+														MouseLeave="MapCanvas_MouseLeave"
+														MouseEnter="MapCanvas_MouseEnter"
 														Height="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Background.ImageSource.PixelHeight}"
 														Width="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Background.ImageSource.PixelWidth}">
-								<Canvas.Background>
-										<ImageBrush ImageSource="{Binding ImgPath}" Stretch="None">
-										</ImageBrush>
-								</Canvas.Background>
-								<Canvas.RenderTransform>
-										<TransformGroup>
-												<!--<ScaleTransform ScaleX="0.01" ScaleY="0.01"/>-->
-												<ScaleTransform ScaleX="{Binding Path=Zoom, Mode=OneWay}"
+						<Canvas.Background>
+								<ImageBrush x:Name="MapImg"
+																						ImageSource="{Binding ImgPath}" 
+																						Stretch="None">
+								</ImageBrush>
+						</Canvas.Background>
+						<Canvas.RenderTransform>
+								<TransformGroup>
+										<!--<ScaleTransform ScaleX="0.01" ScaleY="0.01"/>-->
+										<ScaleTransform ScaleX="{Binding Path=Zoom, Mode=OneWay}"
 																												ScaleY="{Binding Path=Zoom, Mode=OneWay}">
-												</ScaleTransform>
-												<TranslateTransform X="{Binding Path=XOffset, Mode=OneWay}"
+										</ScaleTransform>
+										<TranslateTransform X="{Binding Path=XOffset, Mode=OneWay}"
 																																Y="{Binding Path=YOffset, Mode=OneWay}">
-														
-												</TranslateTransform>
-										</TransformGroup>
-								</Canvas.RenderTransform>
-						</Canvas>
-				</ScrollViewer>
+
+										</TranslateTransform>
+								</TransformGroup>
+						</Canvas.RenderTransform>
+				</Canvas>
 
 				<Grid Grid.Row="1"
 										Background="LightGray">

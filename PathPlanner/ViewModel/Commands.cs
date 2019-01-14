@@ -135,7 +135,27 @@ namespace PathPlanner.ViewModel
 						}
 						
 				}
-				
+
+				private bool DrawStartEndCanExecute(object parameter)
+				{
+						return true;
+				}
+
+				public void DrawStartEndExecute(object parameter)
+				{
+						int[] point = parameter as int[];
+
+						Ellipse start = new Ellipse();
+						start.Fill = Brushes.Green;
+						start.Width = 5;
+						start.Height = 5;
+						start.StrokeThickness = 4;
+						MapCanvas.Children.Add(start);
+						Canvas.SetLeft(start, planner.Start.Pos.X);
+						Canvas.SetTop(start, planner.Start.Pos.Y);
+
+				}
+
 				private bool PlayCanExecute(object parameter)
 				{
 						return !_running && PlannerCreated;
