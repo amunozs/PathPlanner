@@ -47,14 +47,18 @@ namespace PathPlanner.ViewModel
 						}
 				}
 
-				private double _maxUnfrozen = 0;
-				public double MaxUnfrozen
+				private int _maxUnfrozen = 100;
+				public string MaxUnfrozen
 				{
-						get => _maxUnfrozen;
+						get => _maxUnfrozen.ToString();
 						set
 						{
-								_xoffset = value;
-								OnPropertyChanged("XOffset");
+								bool ok = int.TryParse(value, out int result);
+								if (ok)
+								{
+										_maxUnfrozen = result;
+										OnPropertyChanged("MaxUnfrozen");
+								}	
 						}
 				}
 
@@ -128,6 +132,7 @@ namespace PathPlanner.ViewModel
 						planner = new Model.Planner(_bm, Start, End);
 						planner.GoalAttraction = _goalAttraction;
 						planner.PointRepulsion = _previousRepulsion;
+						planner.MaxUnfrozen = _maxUnfrozen;
 						PlannerCreated = true;
 				}
 
@@ -185,7 +190,8 @@ namespace PathPlanner.ViewModel
 						WaitTimeMs = 50;
 						_running = false;
 						GoalAttraction = "1000";
-						PreviousRepulsion = "0.01";
+						PreviousRepulsion = "1";
+						MaxUnfrozen = "100";
 				}
 
 				public event PropertyChangedEventHandler PropertyChanged;

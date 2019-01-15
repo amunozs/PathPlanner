@@ -6,8 +6,6 @@ namespace PathPlanner.Model
 		public class Planner
 		{
 
-				const int maxParalel = 1;
-				const bool freeze = false;
 				const int _maxConsecUnfozen = 1;
 
 				public List<Point> Path;
@@ -43,6 +41,16 @@ namespace PathPlanner.Model
 								{
 										Forces[i].Strength = - _pointRepulsion;
 								}
+						}
+				}
+
+				private int _maxUnfrozen;
+				public int MaxUnfrozen
+				{
+						get => _maxUnfrozen;
+						set
+						{
+								_maxUnfrozen = value;
 						}
 				}
 
@@ -147,7 +155,7 @@ namespace PathPlanner.Model
 								}
 						}
 
-						if(notFrozen < maxParalel)
+						if(notFrozen < _maxUnfrozen)
 						{
 								Forces.Add(new Force(Start.Pos.X, Start.Pos.Y,-PointRepulsion));
 								count++;
@@ -178,7 +186,7 @@ namespace PathPlanner.Model
 								return double.NegativeInfinity;
 						}
 
-						double dist = ((point.Pos.X - End.Pos.X)*(point.Pos.X - End.Pos.X) + (point.Pos.Y - End.Pos.Y)* (point.Pos.Y - End.Pos.Y));
+						double dist = Math.Sqrt((point.Pos.X - End.Pos.X)*(point.Pos.X - End.Pos.X) + (point.Pos.Y - End.Pos.Y)* (point.Pos.Y - End.Pos.Y));
 						if (dist < 0)
 						{
 								dist = -dist;
@@ -191,7 +199,7 @@ namespace PathPlanner.Model
 								{
 										continue;
 								}
-								dist = (Math.Pow(point.Pos.X - f.Pos.X, 2) + Math.Pow(point.Pos.Y - f.Pos.Y, 2));
+								dist = Math.Sqrt(Math.Pow(point.Pos.X - f.Pos.X, 2) + Math.Pow(point.Pos.Y - f.Pos.Y, 2));
 								if (dist < 0)
 								{
 										dist = -dist;
