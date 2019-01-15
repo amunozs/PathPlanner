@@ -80,6 +80,49 @@ namespace PathPlanner.ViewModel
 						}
 				}
 
+				private bool _mapVisible = false;
+				public bool MapVisible
+				{
+						get => _mapVisible;
+						set
+						{
+
+								_mapVisible = value;
+								OnPropertyChanged("MapVisible");
+								OnPropertyChanged("MapNotVisible");
+								OnPropertyChanged("StartNotAdded");
+								OnPropertyChanged("GoalNotAdded");
+						}
+				}
+
+				public bool MapNotVisible
+				{
+						get => !_mapVisible;
+				}
+
+				private bool _startNotAdded = true;
+				public bool StartNotAdded
+				{
+						get => _startNotAdded && MapVisible;
+						set
+						{
+								_startNotAdded = value;
+								OnPropertyChanged("StartNotAdded");
+								OnPropertyChanged("GoalNotAdded");
+						}
+				}
+
+				private bool _goalNotAdded = true;
+				public bool GoalNotAdded
+				{
+						get => _goalNotAdded && !StartNotAdded && MapVisible;
+						set
+						{
+								_goalNotAdded = value;
+								OnPropertyChanged("GoalNotAdded");
+						}
+				}
+
 				public void CreatePlanner ()
 				{
 						planner = new Model.Planner(_bm, Start, End);
@@ -133,19 +176,16 @@ namespace PathPlanner.ViewModel
 
 				public MainViewModel(Canvas mapCanvas)
 				{
-						CreateCommands();
-						ImgPath = @"C:\MUIA\RobotsAutonomos\practica3\Test\PathPlanner\Maps\TestMap.png";
-
-						MapCanvas = mapCanvas;
-						_bm = new Bitmap(ImgPath);
+						CreateCommands();				
+						MapCanvas = mapCanvas;			
 						Model.Force start = Start;
 						Model.Force end = End;
 						
 						_timer = new DispatcherTimer();
 						WaitTimeMs = 50;
 						_running = false;
-						GoalAttraction = "100";
-						PreviousRepulsion = "1";
+						GoalAttraction = "1000";
+						PreviousRepulsion = "0.01";
 				}
 
 				public event PropertyChangedEventHandler PropertyChanged;

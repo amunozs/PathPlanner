@@ -9,6 +9,7 @@
 
 		<Window.Resources>
 				<vm:StateToTextConverter x:Key="StateToTextConverter" />
+				<vm:BoolToVisibility x:Key="BoolToVisibility" />
 		</Window.Resources>
 
 		<Grid x:Name="MapGrid" 
@@ -18,9 +19,10 @@
 						<RowDefinition Height="50"></RowDefinition>
 				</Grid.RowDefinitions>
 				<Canvas x:Name="MapCanvas"
-															Grid.Row="0"
-																				Grid.Column="0"
-																				Grid.ColumnSpan="1"
+														Visibility="{Binding Path=MapVisible, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"
+														Grid.Row="0"
+														Grid.Column="0"
+														Grid.ColumnSpan="1"
 														MouseLeftButtonDown="MapCanvas_MouseLeftButtonDown"
 														MouseLeftButtonUp="MapCanvas_MouseLeftButtonUp"
 														MouseMove="MapCanvas_MouseMove"
@@ -49,6 +51,46 @@
 								</TransformGroup>
 						</Canvas.RenderTransform>
 				</Canvas>
+
+				<Button Grid.Row="0"
+												Grid.Column="0"
+												Width="200"
+												Height="50"
+												Visibility="{Binding Path=MapNotVisible, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"
+												Command="{Binding LoadMapCommand}">
+						Load map
+				</Button>
+
+				<TextBlock Grid.Row="0"
+															Grid.Column="0"
+															Width="500"
+															Height="50"
+															VerticalAlignment="Top"
+															Background="OrangeRed"
+															TextAlignment="Center"
+															FontSize="30"
+															Visibility="{Binding Path=StartNotAdded, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+					<Run FontSize="30" Text="Right click to add " />
+								<Run FontWeight="Bold" FontSize="30" Text="start" />
+								<Run FontSize="30" Text=" point" />
+						
+				</TextBlock>
+
+				<TextBlock Grid.Row="0"
+															Grid.Column="0"
+															Width="500"
+															Height="50"
+															VerticalAlignment="Top"
+															Background="OrangeRed"
+															TextAlignment="Center"
+															FontSize="30"
+															Visibility="{Binding Path=GoalNotAdded, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+						<TextBlock.Inlines>
+								<Run FontSize="30" Text="Right click to add " />
+								<Run FontWeight="Bold" FontSize="30" Text="goal" />
+								<Run FontSize="30" Text=" point" />
+						</TextBlock.Inlines>
+				</TextBlock>
 
 				<Grid Grid.Row="1"
 										Background="LightGray">

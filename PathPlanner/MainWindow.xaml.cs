@@ -90,12 +90,14 @@ namespace PathPlanner
 								Model.Force f = new Model.Force(x, y);
 								((MainViewModel)DataContext).Start = f;
 								start = true;
+								((MainViewModel)DataContext).DrawStartEndExecute(true);
 						}
 						else if (!end)
 						{
 								Model.Force f = new Model.Force((int)e.GetPosition(MapCanvas).X, (int)e.GetPosition(MapCanvas).Y);
 								((MainViewModel)DataContext).End = f;
 								end = true;
+								((MainViewModel)DataContext).DrawStartEndExecute(false);
 								((MainViewModel)DataContext).CreatePlanner();
 						}
 				}

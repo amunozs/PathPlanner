@@ -1,13 +1,9 @@
 ﻿using PathPlanner.Model;
 using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Windows.Threading;
 
 namespace PathPlanner.ViewModel
 {
@@ -25,6 +21,8 @@ namespace PathPlanner.ViewModel
 
 				public ICommand StopCommand { get; set; }
 
+				public ICommand LoadMapCommand { get; set; }
+
 				private void CreateCommands()
 				{
 						DrawPointsCommand = new RelayCommand(DrawPointsExecute, DrawPointsCanExecute);
@@ -33,6 +31,7 @@ namespace PathPlanner.ViewModel
 						PlayCommand = new RelayCommand(PlayExecute, PlayCanExecute);
 						PauseCommand = new RelayCommand(PauseExecute, PauseCanExecute);
 						StopCommand = new RelayCommand(StopExecute, StopCanExecute);
+						LoadMapCommand = new RelayCommand(LoadMapExecute, LoadMapCanExecute);
 				}
 
 
@@ -143,17 +142,29 @@ namespace PathPlanner.ViewModel
 
 				public void DrawStartEndExecute(object parameter)
 				{
-						int[] point = parameter as int[];
+						bool isStart = (bool)parameter;
+						Ellipse ellipse = new Ellipse();
+						ellipse.Width = 5;
+						ellipse.Height = 5;
+						ellipse.StrokeThickness = 4;
+						MapCanvas.Children.Add(ellipse);
 
-						Ellipse start = new Ellipse();
-						start.Fill = Brushes.Green;
-						start.Width = 5;
-						start.Height = 5;
-						start.StrokeThickness = 4;
-						MapCanvas.Children.Add(start);
-						Canvas.SetLeft(start, planner.Start.Pos.X);
-						Canvas.SetTop(start, planner.Start.Pos.Y);
-
+						if (isStart)
+						{
+								ellipse.Fill = Brushes.Green;
+								Canvas.SetLeft(ellipse, Start.Pos.X);
+								Canvas.SetTop(ellipse, Start.Pos.Y);
+								StartNotAdded = false;
+								OnPropertyChanged("StartNotAdded");
+						}
+						else
+						{
+								ellipse.Fill = Brushes.Red;
+								Canvas.SetLeft(ellipse, End.Pos.X);
+								Canvas.SetTop(ellipse, End.Pos.Y);
+								GoalNotAdded = false;
+								OnPropertyChanged("GoalNotAdded");
+						}
 				}
 
 				private bool PlayCanExecute(object parameter)
@@ -209,6 +220,35 @@ namespace PathPlanner.ViewModel
 						*/
 						DrawPointsExecute(parameter);
 						_running = false;
+				}
+
+				private bool LoadMapCanExecute(object parameter)
+				{
+						return MapNotVisible;
+				}
+
+				public void LoadMapExecute(object parameter)
+				{
+						Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+						 
+						dlg.DefaultExt = ".png";
+						dlg.Filter = "PNG Files (*.png)|*.png|JPEG Files (*.jpeg)|*.jpeg|JPG Files (*.jpg)|*.jpg";
+
+						// Display OpenFileDialog by calling ShowDialog method 
+						Nullable<bool> result = dlg.ShowDialog();
+
+
+						// Get the selected file name and display in a TextBox 
+						if (result == true)
+						{
+								// Open document 
+								string filename = dlg.FileName;
+								ImgPath = filename;
+								OnPropertyChanged("ImgPath");
+								_bm = new System.Drawing.Bitmap(ImgPath);
+								MapVisible = true;
+						}
+
 				}
 
 		}
