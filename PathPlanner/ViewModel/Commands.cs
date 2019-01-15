@@ -19,6 +19,8 @@ namespace PathPlanner.ViewModel
 
 				public ICommand PauseCommand { get; set; }
 
+				public ICommand ResetCommand { get; set; }
+
 				public ICommand StopCommand { get; set; }
 
 				public ICommand LoadMapCommand { get; set; }
@@ -30,8 +32,9 @@ namespace PathPlanner.ViewModel
 						NextCommand = new RelayCommand(NextExecute, NextCanExecute);
 						PlayCommand = new RelayCommand(PlayExecute, PlayCanExecute);
 						PauseCommand = new RelayCommand(PauseExecute, PauseCanExecute);
-						StopCommand = new RelayCommand(StopExecute, StopCanExecute);
+						ResetCommand = new RelayCommand(ResetExecute, ResetCanExecute);
 						LoadMapCommand = new RelayCommand(LoadMapExecute, LoadMapCanExecute);
+						StopCommand = new RelayCommand(StopExecute, StopCanExecute);
 				}
 
 
@@ -53,7 +56,7 @@ namespace PathPlanner.ViewModel
 
 								Ellipse ellipse = new Ellipse();
 
-								if (force.Frozen)
+								if (force.ConsecutiveFrozen > _stepsToFreeze)
 								{
 										ellipse.Width = 3;
 										ellipse.Height = 3;
@@ -204,22 +207,30 @@ namespace PathPlanner.ViewModel
 						_running = false;
 				}
 
-				private bool StopCanExecute(object parameter)
+				private bool ResetCanExecute(object parameter)
 				{
-						return true;
+						return MapVisible && !StartNotAdded;
 				}
 
-				public void StopExecute(object parameter)
+				public void ResetExecute(object parameter)
 				{
 						_timer.Stop();
-						planner.Reset();
+
+						if (PlannerCreated)
+						{
+								planner.Reset();
+						}
+						
 						/*
 						Model.Point start = new Model.Point(200, 40);
 						Model.Point end = new Model.Point(400, 200);
 						planner = new Model.Planner(_bm, start, end);
 						*/
-						DrawPointsExecute(parameter);
+						_startNotAdded = true;
+						_goalNotAdded = true;
+						MapCanvas.Children.Clear();
 						_running = false;
+						OnPropertyChanged("StartNotAdded");
 				}
 
 				private bool LoadMapCanExecute(object parameter)
@@ -249,6 +260,25 @@ namespace PathPlanner.ViewModel
 								MapVisible = true;
 						}
 
+				}
+
+				private bool StopCanExecute(object parameter)
+				{
+						return MapVisible;
+				}
+
+				public void StopExecute(object parameter)
+				{
+						if (PlannerCreated)
+						{
+								ResetCommand.Execute(parameter);
+						}
+
+						_startNotAdded = true;
+						_goalNotAdded = true;
+						MapCanvas.Children.Clear();
+						
+						MapVisible = false;
 				}
 
 		}

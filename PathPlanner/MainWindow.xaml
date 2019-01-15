@@ -95,12 +95,13 @@
 				<Grid Grid.Row="1"
 										Background="LightGray">
 						<Grid.ColumnDefinitions>
-								
+
 								<ColumnDefinition Width="90"></ColumnDefinition>
 								<ColumnDefinition Width="50"></ColumnDefinition>
 								<ColumnDefinition Width="90"></ColumnDefinition>
 								<ColumnDefinition Width="50"></ColumnDefinition>
 								<ColumnDefinition Width="*"></ColumnDefinition>
+								<ColumnDefinition Width="50"></ColumnDefinition>
 								<ColumnDefinition Width="50"></ColumnDefinition>
 								<ColumnDefinition Width="50"></ColumnDefinition>
 								<ColumnDefinition Width="50"></ColumnDefinition>
@@ -147,7 +148,7 @@
 																	Grid.Row="1"
 																	VerticalAlignment="Center"
 																	Margin="5,0,0,0">
-								Point repulsion:
+								Steps to freeze:
 						</TextBlock>
 
 						<TextBox Grid.Column="3"
@@ -158,7 +159,7 @@
 						<TextBox Grid.Column="3"
 															Grid.Row="1"
 															Margin="0,3,0,2"
-																Text="{Binding PreviousRepulsion, Mode=TwoWay}">
+																Text="{Binding StepsToFreeze, Mode=TwoWay}">
 						</TextBox>
 
 
@@ -201,6 +202,26 @@
 						<Button Grid.Column="7"
 														Grid.Row="0"
 														Grid.RowSpan="2"
+														Command="{Binding ResetCommand}">
+								<StackPanel>
+										<!--<Image Source="images/next.jpg"
+															Width="30"
+														/>-->
+										<Image Source="Images/reset.png"
+																	RenderOptions.BitmapScalingMode="Fant"
+																	Stretch="Fill"
+																	Width="30"
+																	Height="30"
+																	VerticalAlignment="Top"
+																	Margin="0,0,0,0"
+																	HorizontalAlignment="Center">
+										</Image>
+								</StackPanel>
+						</Button>
+
+						<Button Grid.Column="8"
+														Grid.Row="0"
+														Grid.RowSpan="2"
 														Command="{Binding StopCommand}">
 								<StackPanel>
 										<!--<Image Source="images/next.jpg"
@@ -218,7 +239,7 @@
 								</StackPanel>
 						</Button>
 
-						<StackPanel	Grid.Column="8"
+						<StackPanel	Grid.Column="9"
 												Grid.ColumnSpan="1"
 												Grid.Row="0"
 												Grid.RowSpan="2">
@@ -226,15 +247,11 @@
 								<Slider
 												Maximum="100" 
 												Value="{Binding Path=WaitTimeMs, Mode=TwoWay}"/>
-								<Slider
+								<!--<Slider
 												Maximum="5"
 												Minimum="0.1"
-												Value="{Binding Path=Zoom, Mode=TwoWay}"/>
+												Value="{Binding Path=Zoom, Mode=TwoWay}"/>-->
 						</StackPanel>
-						
-
 				</Grid>
-				
-
 		</Grid>
 </Window>

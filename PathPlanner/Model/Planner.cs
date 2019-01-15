@@ -6,8 +6,6 @@ namespace PathPlanner.Model
 		public class Planner
 		{
 
-				const int _maxConsecUnfozen = 1;
-
 				public List<Point> Path;
 
 				private int[,] _grid;
@@ -43,16 +41,8 @@ namespace PathPlanner.Model
 								}
 						}
 				}
-
-				private int _maxUnfrozen;
-				public int MaxUnfrozen
-				{
-						get => _maxUnfrozen;
-						set
-						{
-								_maxUnfrozen = value;
-						}
-				}
+				public int MaxUnfrozen { get; set; }
+				public int StepsToFreeze { get; set; }
 
 				//public List<Force> Path { get; set; }
 
@@ -88,7 +78,7 @@ namespace PathPlanner.Model
 
 						List<Force> neighs = GetValidNeighs(Forces[index]);
 						double maxForce = GetForce(Forces[index], Forces[index]);
-						if (Forces[index].ConsecutiveFrozen > _maxConsecUnfozen)
+						if (Forces[index].ConsecutiveFrozen > StepsToFreeze)
 						{
 								return false;
 								maxForce = double.NegativeInfinity;
@@ -140,7 +130,7 @@ namespace PathPlanner.Model
 						{
 								count++;
 
-								if (f.ConsecutiveFrozen < _maxConsecUnfozen)
+								if (f.ConsecutiveFrozen < StepsToFreeze)
 								{
 										notFrozen++;
 								}
@@ -155,7 +145,7 @@ namespace PathPlanner.Model
 								}
 						}
 
-						if(notFrozen < _maxUnfrozen)
+						if(notFrozen < MaxUnfrozen)
 						{
 								Forces.Add(new Force(Start.Pos.X, Start.Pos.Y,-PointRepulsion));
 								count++;
@@ -174,7 +164,7 @@ namespace PathPlanner.Model
 				public void Reset ()
 				{
 						Forces = new List<Force>();
-						Forces.Add(_end);
+						//Forces.Add(_end);
 						//Actual = new List<Point>();
 				}
 

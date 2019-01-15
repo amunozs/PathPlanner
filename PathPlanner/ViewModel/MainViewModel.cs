@@ -20,10 +20,12 @@ namespace PathPlanner.ViewModel
 				public State state;
 				public string ImgPath { get; set; }
 				public Canvas MapCanvas {get;set;}
+				
 				public Model.Planner planner;
 				private DispatcherTimer _timer;
 				private bool _running;
 				private Bitmap _bm;
+				private MainWindow _mainWindow;
 
 				private double _zoom = 1;
 				public double Zoom
@@ -59,6 +61,21 @@ namespace PathPlanner.ViewModel
 										_maxUnfrozen = result;
 										OnPropertyChanged("MaxUnfrozen");
 								}	
+						}
+				}
+
+				private int _stepsToFreeze = 100;
+				public string StepsToFreeze
+				{
+						get => _stepsToFreeze.ToString();
+						set
+						{
+								bool ok = int.TryParse(value, out int result);
+								if (ok)
+								{
+										_stepsToFreeze = result;
+										OnPropertyChanged("MaxConsecUnfrozen");
+								}
 						}
 				}
 
@@ -133,6 +150,7 @@ namespace PathPlanner.ViewModel
 						planner.GoalAttraction = _goalAttraction;
 						planner.PointRepulsion = _previousRepulsion;
 						planner.MaxUnfrozen = _maxUnfrozen;
+						planner.StepsToFreeze = _stepsToFreeze;
 						PlannerCreated = true;
 				}
 
@@ -179,8 +197,9 @@ namespace PathPlanner.ViewModel
 				public Model.Force Start { get; set; }
 				public Model.Force End { get; set; }
 
-				public MainViewModel(Canvas mapCanvas)
+				public MainViewModel(Canvas mapCanvas, MainWindow mainWindow)
 				{
+						_mainWindow = mainWindow;
 						CreateCommands();				
 						MapCanvas = mapCanvas;			
 						Model.Force start = Start;
@@ -192,6 +211,7 @@ namespace PathPlanner.ViewModel
 						GoalAttraction = "1000";
 						PreviousRepulsion = "1";
 						MaxUnfrozen = "100";
+						StepsToFreeze = "10";
 				}
 
 				public event PropertyChangedEventHandler PropertyChanged;

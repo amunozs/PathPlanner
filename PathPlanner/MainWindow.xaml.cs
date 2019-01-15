@@ -25,7 +25,7 @@ namespace PathPlanner
 				{
 						InitializeComponent();
 						InitializeComponent();
-						MainViewModel vm = new MainViewModel(MapCanvas);
+						MainViewModel vm = new MainViewModel(MapCanvas, this);
 						this.DataContext = vm;
 				}
 
@@ -79,24 +79,20 @@ namespace PathPlanner
 						((MainViewModel)DataContext).YOffset = yOffset;
 				}
 
-				bool start = false;
-				bool end = false;
 				private void MapCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
 				{
-						if (! start)
+						if (((MainViewModel)DataContext).StartNotAdded)
 						{
 								int x = (int)e.GetPosition(MapCanvas).X;
 								int y = (int)e.GetPosition(MapCanvas).Y;
 								Model.Force f = new Model.Force(x, y);
 								((MainViewModel)DataContext).Start = f;
-								start = true;
 								((MainViewModel)DataContext).DrawStartEndExecute(true);
 						}
-						else if (!end)
+						else if (((MainViewModel)DataContext).GoalNotAdded)
 						{
 								Model.Force f = new Model.Force((int)e.GetPosition(MapCanvas).X, (int)e.GetPosition(MapCanvas).Y);
 								((MainViewModel)DataContext).End = f;
-								end = true;
 								((MainViewModel)DataContext).DrawStartEndExecute(false);
 								((MainViewModel)DataContext).CreatePlanner();
 						}
