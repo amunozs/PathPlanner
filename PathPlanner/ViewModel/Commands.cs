@@ -37,8 +37,6 @@ namespace PathPlanner.ViewModel
 						StopCommand = new RelayCommand(StopExecute, StopCanExecute);
 				}
 
-
-
 				private bool DrawPointsCanExecute(object parameter)
 				{
 						return true;

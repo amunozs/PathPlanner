@@ -59,6 +59,10 @@ namespace PathPlanner.ViewModel
 								if (ok)
 								{
 										_maxUnfrozen = result;
+										if (PlannerCreated)
+										{
+												planner.MaxUnfrozen = _maxUnfrozen;
+										}
 										OnPropertyChanged("MaxUnfrozen");
 								}	
 						}
@@ -74,7 +78,11 @@ namespace PathPlanner.ViewModel
 								if (ok)
 								{
 										_stepsToFreeze = result;
-										OnPropertyChanged("MaxConsecUnfrozen");
+										if (PlannerCreated)
+										{
+												planner.StepsToFreeze = _stepsToFreeze;
+										}
+										OnPropertyChanged("StepsToFreeze");
 								}
 						}
 				}
