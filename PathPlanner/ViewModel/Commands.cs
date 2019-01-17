@@ -239,7 +239,9 @@ namespace PathPlanner.ViewModel
 				public void LoadMapExecute(object parameter)
 				{
 						Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-						 
+						dlg.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+
 						dlg.DefaultExt = ".png";
 						dlg.Filter = "PNG Files (*.png)|*.png|JPEG Files (*.jpeg)|*.jpeg|JPG Files (*.jpg)|*.jpg";
 

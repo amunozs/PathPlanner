@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:PathPlanner.ViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Alvaro Muñoz Serrano" Height="450" Width="800">
 
 		<Window.Resources>
 				<vm:StateToTextConverter x:Key="StateToTextConverter" />
@@ -66,7 +66,7 @@
 															Width="500"
 															Height="50"
 															VerticalAlignment="Top"
-															Background="OrangeRed"
+															Background="LightBlue"
 															TextAlignment="Center"
 															FontSize="30"
 															Visibility="{Binding Path=StartNotAdded, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
@@ -81,7 +81,7 @@
 															Width="500"
 															Height="50"
 															VerticalAlignment="Top"
-															Background="OrangeRed"
+															Background="LightBlue"
 															TextAlignment="Center"
 															FontSize="30"
 															Visibility="{Binding Path=GoalNotAdded, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
